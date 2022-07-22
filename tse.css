@@ -1,0 +1,149 @@
+/*
+ * Style sheet for the TSE tutorial.  You shouldn't have to modify this file, but feel free to play
+ * around with colors, fonts, etc.
+ */
+body {
+  font-family: Optimo-Plain,Helvetica Neue,Helvetica,Arial,sans-serif;
+  text-after-overflow: center;
+  background-color: white;
+  color: #1d232f;
+}
+
+h1 {
+  text-align: center;
+}
+
+#header {
+  height: 50px;
+  line-height: 50px;
+  padding-bottom: 10px;
+  background-color: rgb(28,78,169);
+}
+
+.use-case-name {
+  font-family: BB-Roller-Regular,Courrier,sans-serif;
+  font-size: 24px;
+  color: white;
+}
+
+#login-form {
+  font-family: sans-serif;
+  padding: 30px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  align-content: center;
+  text-align: center;
+  background-color: #EAEDF2;
+}
+
+.hidden {
+  display: none; /* disable initially */
+}
+
+#main-app {
+  top: 50px;
+  height: 1000px;
+}
+
+#embed {
+  margin-left: 150px;
+  display: block;
+  width: 90vw;
+  height: 90vh;
+  background-color: #EAEDF2;
+}
+
+.sidenav {
+  left: 0;
+  background-color: white;
+  padding: 0;
+  height: 1000px;
+  width: 150px;
+  position: fixed; /* Stay in place */
+  overflow-x: hidden; /* Disable horizontal scroll */
+  transition: 0.5s; /* 0.5 second transition effect to slide in the navbar */
+  margin-top: 20px;
+}
+
+.sidenav a {
+  padding: 8px 8px 8px 32px;
+  text-decoration: none;
+  font-family: BB-Roller-Regular,Courrier,sans-serif;
+  font-size: 14px;
+  /* color: #818181; */
+  color: black;
+  display: block;
+  transition: 0.3s;
+}
+
+.sidenav a:hover {
+  background-color: lightsteelblue;
+  cursor: pointer;
+}
+
+#landing-page {
+  /* background-color: #EAEDF2;*/
+  background-color: white;
+  flex-direction: column;
+}
+
+.page-instructions {
+  text-align: center;
+  font-size: 20px;
+  font-weight: normal;
+  text-align: left;
+  margin-left: 30px;
+}
+
+.tile-container {
+    flex-flow: row nowrap;
+    box-sizing: border-box;
+    padding: 10px;
+    flex: 0 1 auto;
+}
+
+.tile {
+  background-color: white;
+  align-items: center;
+  align-content: center;
+  width: 375px;
+  padding: 10px;
+  margin: 5px;
+  float: left;
+}
+
+.tile-header {
+  font-size: 18px;
+  margin: 5px;
+}
+
+.tile-description {
+  margin: 5px;
+}
+
+.tile-image {
+  height: 150px;
+  width: 300px;
+}
+
+.go-button {
+  cursor: pointer;
+  color: #1d232f;
+  background-color: #eaedf2;
+  min-width: 5.71429rem;
+  padding-top: .42857rem;
+  padding-bottom: .42857rem;
+  padding-left: 1.71429rem;
+  padding-right: 1.71429rem;
+  border-radius: 100vh;
+  border: 0;
+}
+
+P.warning {
+  text-align: center;
+  color: crimson;
+  font-weight: normal;
+  font-style: italic;
+  font-size: x-large;
+}

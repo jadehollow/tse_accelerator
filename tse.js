@@ -1,0 +1,265 @@
+/*
+ * The completed script for the ThoughtSpot Everywhere tutorial.  Your solution should look similar.
+ * It's recommended to refer to the documentation and Developer Playground to try to get it working before
+ * using this file.
+ */
+import {
+  init,
+  Action,
+  AppEmbed,
+  AuthType,
+  EmbedEvent,
+  HostEvent,
+  LiveboardEmbed,
+  Page,
+  RuntimeFilterOp,
+  SearchEmbed,
+} from 'https://unpkg.com/@thoughtspot/visual-embed-sdk/dist/tsembed.es.js';
+
+import {getSearchData} from "./rest-api.js";
+import {LiveboardContextActionData} from "./dataclasses.js";
+
+// TODO - set the following for your URL.
+const tsURL = "https://training.thoughtspot.cloud";
+
+//------------------------------ Set up TS and authenticate and show app. ----------------------------
+
+// Create and manage the login screen.
+const onLogin = () => {
+  // The following can be used if you want to use AuthType.Basic
+  //const username = document.getElementById('username').value;
+  //const password = document.getElementById('password').value;
+
+  // TODO add the init() to set up the SDK interface.
+  init({
+    thoughtSpotHost: tsURL,
+    authType: AuthType.None
+  });
+  hideDiv('login');
+  showDiv('landing-page');
+}
+
+// Clears out the page and shows the main app.
+// This can be called from any page to make sure the state is correct.
+const showMainApp = () => {
+  clearEmbed(); // just to be sure.
+  hideDiv('landing-page');
+  showDiv('main-app');
+}
+
+//----------------------------------- Functions to embed content . -----------------------------------
+
+const onSearch = () => {
+  showMainApp();
+
+  const embed = new SearchEmbed("#embed", {
+    frameParams: {},
+    collapseDataSources: true,
+    disabledActions: [Action.Share, Action.Download],
+    disabledActionReason: "Ask for permission",
+    hiddenActions: [Action.SpotIQAnalyze],
+    dataSources: ["1b1c237d-9de8-4542-bf1f-0c3157ddb8d2"],
+    searchOptions: {
+        searchTokenString: '[sales] [product type]',
+        executeSearch: true,
+    },
+  });
+
+  embed.render();
+}
+
+const onLiveboard = () => {
+  showMainApp();
+
+  const embed = new LiveboardEmbed("#embed", {
+     liveboardId: "9c3d26af-cf1b-4e89-aa42-f60d34983827",
+  });
+
+  embed.render();
+}
+
+const onVisualization = () => {
+  showMainApp();
+
+  const embed = new LiveboardEmbed("#embed", {
+     liveboardId: "9c3d26af-cf1b-4e89-aa42-f60d34983827",
+     vizId: "7e8f359c-78d8-49dd-b410-1604271e1e34",
+  });
+
+  embed.render();
+}
+
+// Embed the full application.
+const onFull = () => {
+  showMainApp();
+
+  const embed = new AppEmbed("#embed", {
+     pageId: Page.Home,
+  });
+
+  embed.render();
+}
+
+// Embed a custom action.
+const onCustomAction = () => {
+  showMainApp();
+
+  const embed = new LiveboardEmbed("#embed", {
+     liveboardId: "b504e160-3025-4508-a76a-1beb1f4b5eed",
+  });
+
+  embed
+     .on(EmbedEvent.CustomAction, payload => {
+          if (payload.id === 'filter-content') {
+               filterData(embed, payload);
+          }
+     })
+    .on(EmbedEvent.Error, () => {
+        showNoDataImage();
+        hideLoader();
+    })
+    // Render a viz within a liveboard
+    .render();
+}
+
+// Updates the global filterValues array, then re-runs the embedLiveboard to reload the original Liveboard with the updated values in the runtimeFilters
+const filterData = (embed, payload) => {
+  const actionData = LiveboardContextActionData.createFromJSON(payload);
+  const columnNameToFilter = actionData.columnNames[0];
+  const filterValues = [];
+  filterValues.push(actionData.data[columnNameToFilter][0]);
+
+  embed.trigger(HostEvent.UpdateRuntimeFilters, [{
+    columnName: columnNameToFilter,
+    operator: RuntimeFilterOp.EQ,
+    values: filterValues,
+  }]);
+}
+
+// Embed an example of using the SearchData api and highcharts.
+const onCustomChart = () => {
+  showMainApp();
+
+  const worksheetID = "1b1c237d-9de8-4542-bf1f-0c3157ddb8d2";  // GUID for Sample Retail - Apparel - Developer WS
+  const search = "[sales] [product type] [product] top 15";
+
+  getSearchData(tsURL, worksheetID, search).then(data => {
+    console.log(data);
+
+    // Get the indexes of the columns in the data.
+    const salesIdx = data.columnNames.findIndex(v => v == 'Total Sales');
+    const productTypeIdx = data.columnNames.findIndex(v => v == 'Product Type');
+    const productIdx = data.columnNames.findIndex(v => v == 'Product');
+
+    // convert the resulting data to the series for the HighChart.  Format is:
+    // [
+    //   { name: '<product type>', data: [{ name: <product>, value: <sales> }, ... ]}
+    //   { name: '<product type>', data: [{ name: <product>, value: <sales> }, ... ]}
+    // ]
+
+    const series = {}
+    for (const r of data.data) {
+      const productType = r[productTypeIdx]
+      if (! Object.keys(series).includes(productType)) {
+        series[productType] = []
+      }
+      // Combines all the data items to the key for each series.
+      series[productType].push({ name: r[productIdx], value: r[salesIdx]/1000});
+    }
+
+    // Now need to as the chart series.
+    const chartSeries = []
+    for (const productType of Object.keys(series)) {
+      chartSeries.push({name: productType, data: series[productType]})
+    }
+
+    // Render the chart.
+    Highcharts.chart('embed', {
+      chart: {
+        type: 'packedbubble'
+        /* height: '80%'*/
+      },
+      title: {
+        text: 'Sales of product by product type'
+      },
+      tooltip: {
+        useHTML: true,
+        pointFormat: '<b>{point.name}:</b> ${point.value:.1f}M</sub>'
+      },
+      plotOptions: {
+        packedbubble: {
+          minSize: '20%',
+          maxSize: '40%',
+          zMin: 0,
+          zMax: 1000,
+          layoutAlgorithm: {
+            gravitationalConstant: 0.05,
+            splitSeries: true,
+            seriesInteraction: false,
+            dragBetweenSeries: true,
+            parentNodeLimit: true
+          },
+          dataLabels: {
+            enabled: true,
+            format: '{point.name}',
+            filter: {
+              property: 'y',
+              operator: '>',
+              value: 250
+            },
+            style: {
+              color: 'black',
+              textOutline: 'none',
+              fontWeight: 'normal'
+            }
+          }
+        }
+      },
+      series: chartSeries
+    });
+  });
+
+}
+
+//----------------------------------- Functions to manage the UI. -----------------------------------
+
+// functions to show and hide parts of the UI.
+const showDiv = divId => {
+  const div = document.getElementById(divId);
+  div.style.display = 'flex';
+}
+
+const hideDiv = divId => {
+  const div = document.getElementById(divId);
+  div.style.display = 'none';
+}
+
+// Clears the embedded section.
+const clearEmbed = () => {
+  const div = document.getElementById("embed");
+  div.innerHTML = "";
+}
+
+//---------------------------- connect UI to code and start the app. ----------------------------
+
+// Show the URL to connect to.
+document.getElementById('ts-url').innerText = 'ThoughtSpot Server: ' + tsURL;
+
+// Hook up the events to the buttons and links.
+document.getElementById('login-button').addEventListener('click', onLogin);
+
+// Events for buttons
+document.getElementById('search-button').addEventListener('click', onSearch);
+document.getElementById('liveboard-button').addEventListener('click', onLiveboard);
+document.getElementById('viz-button').addEventListener('click', onVisualization);
+document.getElementById('full-app-button').addEventListener('click', onFull);
+document.getElementById('custom-action-button').addEventListener('click', onCustomAction);
+document.getElementById('custom-chart-button').addEventListener('click', onCustomChart);
+
+// Events for nav bar
+document.getElementById('search-link').addEventListener('click', onSearch);
+document.getElementById('liveboard-link').addEventListener('click', onLiveboard);
+document.getElementById('visualization-link').addEventListener('click', onVisualization);
+document.getElementById('full-application-link').addEventListener('click', onFull);
+document.getElementById('custom-action-link').addEventListener('click', onCustomAction);
+document.getElementById('custom-chart-link').addEventListener('click', onCustomChart);

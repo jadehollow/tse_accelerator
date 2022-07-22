@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<!--
+  HTML file for the layout of the TS Everywhere tutorial application.  You shouldn't have to modify this file.
+-->
+<html lang='en'>
+<head>
+    <meta charset='UTF-8'/>
+    <title>TS Everywhere Tutorial</title>
+    <link rel='icon' href='images/TS.png' />
+    <link rel='stylesheet' href='tse.css' />
+    <link rel='stylesheet' href='custom-actions.css' />
+</head>
+<body>
+    <div id="header">
+        <span class='use-case-name'>&nbsp;Retail Analytics</span>
+    </div>
+    <div id='login' class='visible'>
+        <form id='login-form'>
+            <span id='ts-url'></span>
+            <br/>
+            <br/>
+            <!-- The following can be used if you want to use AuthType.Basic
+            <label for='username'>Username: </label>
+            <input type='text' id='username' />
+            <br/>
+            <label for='password'>Password: </label>
+            <input type='password' id='password' />
+            <br/>
+            <button id='login-button' type='button'>Login</button>
+            -->
+            <button id='login-button' type='button'>Connect</button>
+        </form>
+    </div>
+    <div id="landing-page" class="hidden">
+        <div>
+            <p class="page-instructions">Select an embedding option below to get started</p>
+        </div>
+        <div class="tile-container">
+            <div class="tile" id="embed-search-tile">
+                <img class="tile-image" src="images/TSE-search.png" alt="embed search icon"/>
+                <p class="tile-header">Embed Search</p>
+                <p class="tile-description">Embed a search-driven experience to let users ask their own data question</p>
+                <button id="search-button" class="go-button">Go</button>
+            </div>
+            <div class="tile" id="embed-liveboard-tile">
+                <img class="tile-image" src="images/TSE-liveboard.png" alt="embed liveboard icon"/>
+                <p class="tile-header">Embed Liveboards</p>
+                <p class="tile-description">Embed a liveboard into your app</p>
+                <button id="liveboard-button" class="go-button">Go</button>
+            </div>
+        </div>
+        <div class="tile-container">
+            <div class="tile" id="embed-viz-tile">
+                <img class="tile-image" src="images/TSE-chart.png" alt="embed visualization icon"/>
+                <p class="tile-header">Embed Visualizations</p>
+                <p class="tile-description">Embed a chart or table into your app</p>
+                <button id="viz-button" class="go-button">Go</button>
+            </div>
+            <div class="tile" id="embed-full-app-tile">
+                <img class="tile-image" src="images/TSE-fullapp.png" alt="embed full application icon"/>
+                <p class="tile-header">Embed Full App</p>
+                <p class="tile-description">Embed the full ThoughtSpot application into your app</p>
+                <button id="full-app-button" class="go-button">Go</button>
+            </div>
+        </div>
+        <div class="tile-container">
+            <div class="tile" id="embed-custom-action-tile">
+                <img class="tile-image" src="images/TSE-custom-action.png" alt="embed visualization with custom action"/>
+                <p class="tile-header">Embed Custom Action</p>
+                <p class="tile-description">Embed a visualization with a custom action into your app</p>
+                <button id="custom-action-button" class="go-button">Go</button>
+            </div>
+            <div class="tile" id="embed-custom-chart-tile">
+                <img class="tile-image" src="images/TSE-custom-chart.png" alt="embed custom chart"/>
+                <p class="tile-header">Embed Custom Chart</p>
+                <p class="tile-description">Embed a custom chart using search data</p>
+                <button id="custom-chart-button" class="go-button">Go</button>
+            </div>
+        </div>
+    </div>
+    <div id="main-app" class="hidden">
+        <div id='navbar' class='sidenav'>
+            <a id='search-link'>Search</a>
+            <a id='liveboard-link'>Liveboard</a>
+            <a id='visualization-link'>Visualization</a>
+            <a id='full-application-link'>Full Application</a>
+            <a id='custom-action-link'>Custom Action</a>
+            <a id='custom-chart-link'>Custom Chart</a>
+        </div>
+        <div id='embed'>
+        </div>
+    </div>
+    <script src='tse.js' type='module'></script>
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/highcharts-more.js"></script>
+    <script src="https://code.highcharts.com/modules/accessibility.js"></script>
+</body>
+</html>
